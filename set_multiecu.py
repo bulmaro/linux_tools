@@ -6,15 +6,15 @@ import copy
 # Use sim_ua_init_config to generate v1_config.json & uptane_config.json
 # for each sample_uaX
 
-os.chdir(f"{os.path.expanduser('~')}/work/MultiECU") # cd ~/work/MultiECU
+os.chdir(f"{os.path.expanduser('~')}/work/Rel/sample_ua/V2.1.0.429/") # cd ~/work/MultiECU
 
 sim_ua = json.load(open("/data/aqconfig/sim_ua_init_config.json"))
 
 for i in range(0, 4):
     sim_ua["config"][i]["mutexes"][0] = f"SampleUA{i+1}"
-    with open(f"./sample_ua{i+1}/v1_config.json", 'w') as v1c:
-        json.dump(sim_ua["config"][i], v1c, indent=4)
-    with open(f"./sample_ua{i+1}/uptane_config.json", 'w') as uc:
+    with open(f"./build{i+1}/sample_ua/v1_config.json", 'w') as v1c:
+        json.dump({"config":[sim_ua["config"][i]]}, v1c, indent=4)
+    with open(f"./build{i+1}/sample_ua/uptane_config.json", 'w') as uc:
         json.dump( {"thisEcuId" : sim_ua["config"][i]["serialNumber"]}, uc, indent=4)
 
 # Erase and recreate /data configuration files
@@ -72,13 +72,13 @@ with open(f"/data/otamatic/factory_default_uptane/installed_ecus.json", 'w') as 
 
 # Get and set non-expiration meta-data
 
-os.system("~/work/otamatic_reference_app/lib/security/test/uptane/scripts/populate_metadata.py ~/work/MultiECU/keys ~/work/vsdmqautilities/Client-Build/Bighorn/tools/stage/backend_config_bootstrap.json /data/otamatic/uptane/files/A")
+os.system("~/work/Rel/client/V2.1.0.429/lib/security/test/uptane/scripts/populate_metadata.py ~/work/temp/keys ~/work/vsdmqautilities/Client-Build/Bighorn/tools/stage/backend_config_bootstrap.json /data/otamatic/uptane/files/A")
 
 for i in range(1, 5):
     os.system(f"rm -rf /data/sampleua{i}/factory_default_uptane/cached")
     os.system(f"rm -rf /data/sampleua{i}/factory_default_uptane/trust_root")
-    os.system(f"cp -R ~/work/MultiECU/keys/cached /data/sampleua{i}/factory_default_uptane")
-    os.system(f"cp -R ~/work/MultiECU/keys/trust_root /data/sampleua{i}/factory_default_uptane")
+    os.system(f"cp -R ~/work/temp/keys/cached /data/sampleua{i}/factory_default_uptane")
+    os.system(f"cp -R ~/work/temp/keys/trust_root /data/sampleua{i}/factory_default_uptane")
 
 # Update MUA config
 mua_config = json.load(open("/data/aqconfig/mua_config.json"))
